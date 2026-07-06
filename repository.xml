@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+
+<repostories version="1.0">
+  <repo priority="50" quality="experimental" status="unofficial">
+    <name>slashpotato</name>
+    <description>slashpotato's own gentoo overlay.</description>
+    <homepage>https://codeberg.org/slashpotato/gentoo-overlay</homepage>
+    <source type="git">https://codeberg.org/slashpotato/gentoo-overlay.git</source>
+  </repo>
+</repostories>
