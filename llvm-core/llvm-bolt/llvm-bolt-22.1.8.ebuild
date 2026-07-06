@@ -6,6 +6,7 @@ LLVM_COMPONENTS=(
     llvm
     bolt
     cmake
+	third-party
 )
 
 inherit cmake llvm.org python-any-r1 toolchain-funcs
