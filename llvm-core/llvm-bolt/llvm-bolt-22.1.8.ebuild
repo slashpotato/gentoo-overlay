@@ -37,6 +37,7 @@ src_configure() {
 
         -DCMAKE_BUILD_TYPE=Release
 
+		-DBUILD_SHARED_LIBS=OFF
         -DLLVM_BUILD_TOOLS=OFF
         -DLLVM_BUILD_TESTS=OFF
         -DLLVM_INCLUDE_TESTS=OFF
