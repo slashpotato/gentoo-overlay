@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-GENTOO_RSYNC_URL="${GENTOO_RSYNC_URL:-rsync://rsync.gentoo.org/gentoo-portage/llvm-core/llvm/}"
+GENTOO_RSYNC_URL="${GENTOO_RSYNC_URL:-rsync://mirrors.dotsrc.org/gentoo-portage/llvm-core/llvm/}"
 OVERLAY_DIR="${OVERLAY_DIR:-$(pwd)}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
