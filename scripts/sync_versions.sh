@@ -22,7 +22,7 @@ trap 'rm -rf "${WORK}"' EXIT
 
 echo "== rsync llvm-core/llvm из ${GENTOO_RSYNC_URL} ==" >&2
 mkdir -p "${WORK}/upstream"
-rsync --no-motd -a --timeout=60 "${GENTOO_RSYNC_URL}" "${WORK}/upstream/" >&2
+rsync --no-motd -a "${GENTOO_RSYNC_URL}" "${WORK}/upstream/" >&2
 
 UPSTREAM_DIR="${WORK}/upstream"
 OUR_DIR="${OVERLAY_DIR}/llvm-core/llvm"
