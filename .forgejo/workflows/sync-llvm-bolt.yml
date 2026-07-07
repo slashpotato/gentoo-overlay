@@ -1,0 +1,129 @@
+name: sync llvm-core/llvm from ::gentoo and patch for bolt
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  sync-and-patch:
+    runs-on: alpine
+    container:
+      image: node:alpine
+
+    steps:
+      - name: install deps
+        run: apk add --no-cache git python3 rsync bash openssh-client
+
+      - name: checkout overlay
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: sync + patch versions from ::gentoo
+        id: sync
+        run: |
+          set -euo pipefail
+          before=$(git rev-parse HEAD)
+          changed=$(OVERLAY_DIR="$(pwd)" bash scripts/sync_versions.sh)
+          echo "$changed" > /tmp/changed.txt
+          if [[ -z "$changed" ]]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "Изменённые/новые ебилды:"
+          cat /tmp/changed.txt
+
+      - name: commit + push
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          GIT_AUTHOR_NAME: forgejo-actions
+          GIT_AUTHOR_EMAIL: actions@noreply.local
+          GIT_COMMITTER_NAME: forgejo-actions
+          GIT_COMMITTER_EMAIL: actions@noreply.local
+        run: |
+          set -euo pipefail
+          git add llvm-core/llvm
+          git commit -m "llvm-core/llvm: sync from ::gentoo + patch for bolt
+
+          $(cat /tmp/changed.txt | sed 's/^/- /')"
+          git push origin HEAD:${{ github.ref_name }}
+
+  manifest-and-verify:
+    needs: sync-and-patch
+    if: needs.sync-and-patch.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: docker
+    container:
+      # официальный stage3 годится: там уже есть portage/ebuild(1) и toolchain.
+      # если у тебя есть свой образ с уже настроенным make.conf/DISTDIR -
+      # подставь его сюда, будет быстрее (не нужно поднимать portage с нуля).
+      image: gentoo/stage3:latest
+      options: --network=host
+    steps:
+      - name: checkout overlay (после коммита sync-job)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: список изменённых в этом коммите ебилдов
+        id: diff
+        run: |
+          set -euo pipefail
+          files=$(git diff --name-only HEAD~1 HEAD -- 'llvm-core/llvm/*.ebuild')
+          echo "$files" > /tmp/ebuilds.txt
+          cat /tmp/ebuilds.txt
+
+      - name: repos.conf для этого оверлея
+        run: |
+          set -euo pipefail
+          mkdir -p /etc/portage/repos.conf
+          cat > /etc/portage/repos.conf/llvm-bolt-overlay.conf <<EOF
+          [llvm-bolt-overlay]
+          location = $(pwd)
+          masters = gentoo
+          auto-sync = no
+          EOF
+
+      - name: emerge --sync основного дерева (нужен для зависимостей типа lld)
+        run: emerge-webrsync -q || emerge --sync -q
+
+      - name: ebuild manifest для изменённых версий
+        run: |
+          set -euo pipefail
+          while read -r f; do
+            [[ -z "$f" ]] && continue
+            echo "=== manifest: $f ==="
+            ebuild "$f" manifest --force
+          done < /tmp/ebuilds.txt
+
+      - name: pkgcheck scan (QA, не фейлим job на предупреждениях)
+        run: |
+          emerge -q --oneshot app-portage/pkgcheck || true
+          pkgcheck scan --repo llvm-bolt-overlay llvm-core/llvm || true
+
+      - name: пробный резолв зависимостей (без реальной сборки)
+        run: |
+          while read -r f; do
+            [[ -z "$f" ]] && continue
+            pkg="llvm-core/$(basename "$(dirname "$f")")"
+            ver=$(basename "$f" .ebuild)
+            ver=${ver#*-}
+            emerge -pv "=${pkg}-${ver}[bolt]" || echo "::warning::resolve failed for =${pkg}-${ver}[bolt]"
+          done < /tmp/ebuilds.txt
+
+      - name: commit Manifest
+        env:
+          GIT_AUTHOR_NAME: forgejo-actions
+          GIT_AUTHOR_EMAIL: actions@noreply.local
+          GIT_COMMITTER_NAME: forgejo-actions
+          GIT_COMMITTER_EMAIL: actions@noreply.local
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- llvm-core/llvm; then
+            echo "Manifest не изменился"
+            exit 0
+          fi
+          git add llvm-core/llvm
+          git commit -m "llvm-core/llvm: regenerate Manifest"
+          git push origin HEAD:${{ github.ref_name }}
