@@ -22,7 +22,7 @@ trap 'rm -rf "${WORK}"' EXIT
 
 echo "== rsync llvm-core/llvm из ${GENTOO_RSYNC_URL} ==" >&2
 mkdir -p "${WORK}/upstream"
-rsync -a --timeout=60 "${GENTOO_RSYNC_URL}" "${WORK}/upstream/" >&2
+rsync --no-motd -a --timeout=60 "${GENTOO_RSYNC_URL}" "${WORK}/upstream/" >&2
 
 UPSTREAM_DIR="${WORK}/upstream"
 OUR_DIR="${OVERLAY_DIR}/llvm-core/llvm"
@@ -55,7 +55,7 @@ done
 # files/ каталог (патчи апстрима и т.п.) синкаем как есть, без модификаций
 if [[ -d "${UPSTREAM_DIR}/files" ]]; then
 	mkdir -p "${OUR_DIR}/files"
-	rsync -a --delete "${UPSTREAM_DIR}/files/" "${OUR_DIR}/files/" >&2
+	rsync --no-motd -a --delete "${UPSTREAM_DIR}/files/" "${OUR_DIR}/files/" >&2
 fi
 
 for f in "${changed[@]:-}"; do
