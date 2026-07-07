@@ -66,7 +66,7 @@ PDEPEND="
 	binutils-plugin? ( >=llvm-core/llvmgold-${LLVM_MAJOR} )
 "
 
-LLVM_COMPONENTS=( llvm cmake )
+LLVM_COMPONENTS=( llvm cmake bolt )
 LLVM_TEST_COMPONENTS=( third-party )
 LLVM_MANPAGES=1
 LLVM_PATCHSET=${PV}-r7
