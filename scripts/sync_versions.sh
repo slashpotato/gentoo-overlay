@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Синхронизирует llvm-core/llvm из ::gentoo, патчит каждый ебилд под bolt
-# и раскладывает результат в нашем оверлее (llvm-core/llvm/).
+# Синхронизирует llvm-core/llvm из ::gentoo (через rsync-зеркало
+# gentoo-portage, а не git clone — легче и не зависит от доступности github.com),
+# патчит каждый ебилд под bolt и раскладывает результат в нашем оверлее.
 #
 # Переменные окружения:
-#   GENTOO_TREE_URL  - откуда тянуть дерево (по умолчанию зеркало на github)
+#   GENTOO_RSYNC_URL - rsync-модуль/путь до llvm-core/llvm в зеркале portage
+#                      (по умолчанию официальный round-robin rsync.gentoo.org)
 #   OVERLAY_DIR      - корень нашего оверлея (по умолчанию текущая директория)
 #
 # На выходе в stdout печатает список версий, которые были добавлены/изменены
@@ -11,18 +13,18 @@
 
 set -euo pipefail
 
-GENTOO_TREE_URL="${GENTOO_TREE_URL:-https://github.com/gentoo/gentoo.git}"
+GENTOO_RSYNC_URL="${GENTOO_RSYNC_URL:-rsync://rsync.gentoo.org/gentoo-portage/llvm-core/llvm/}"
 OVERLAY_DIR="${OVERLAY_DIR:-$(pwd)}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 WORK=$(mktemp -d)
 trap 'rm -rf "${WORK}"' EXIT
 
-echo "== sparse-checkout llvm-core/llvm из ${GENTOO_TREE_URL} ==" >&2
-git clone --depth=1 --filter=blob:none --sparse "${GENTOO_TREE_URL}" "${WORK}/gentoo" >&2
-git -C "${WORK}/gentoo" sparse-checkout set llvm-core/llvm >&2
+echo "== rsync llvm-core/llvm из ${GENTOO_RSYNC_URL} ==" >&2
+mkdir -p "${WORK}/upstream"
+rsync -a --timeout=60 "${GENTOO_RSYNC_URL}" "${WORK}/upstream/" >&2
 
-UPSTREAM_DIR="${WORK}/gentoo/llvm-core/llvm"
+UPSTREAM_DIR="${WORK}/upstream"
 OUR_DIR="${OVERLAY_DIR}/llvm-core/llvm"
 mkdir -p "${OUR_DIR}"
 

@@ -10,10 +10,9 @@ jobs:
     runs-on: alpine
     container:
       image: node:alpine
-
     steps:
       - name: install deps
-        run: apk add --no-cache git python3 rsync bash openssh-client
+        run: apk add --no-cache git python3 rsync bash
 
       - name: checkout overlay
         uses: actions/checkout@v4
