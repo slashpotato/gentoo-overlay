@@ -53,7 +53,7 @@ jobs:
   manifest-and-verify:
     needs: sync-and-patch
     if: needs.sync-and-patch.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: docker
+    runs-on: alpine
     container:
       # официальный stage3 годится: там уже есть portage/ebuild(1) и toolchain.
       # если у тебя есть свой образ с уже настроенным make.conf/DISTDIR -
