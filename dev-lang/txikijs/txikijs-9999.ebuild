@@ -13,9 +13,8 @@ SLOT="0"
 KEYWORDS=""
 IUSE="debug sqlite test wasm"
 
-RDEPEND="dev-libs/libffi:="
-DEPEND="${RDEPEND}"
 BDEPEND="
+	sys-apps/texinfo
 	dev-build/autoconf
 	dev-build/libtool
 	sys-devel/gettext
