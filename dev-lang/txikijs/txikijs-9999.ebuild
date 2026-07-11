@@ -16,8 +16,8 @@ IUSE="debug sqlite test wasm"
 RDEPEND="dev-libs/libffi:="
 DEPEND="${RDEPEND}"
 BDEPEND="
-	sys-devel/autoconf
-	sys-devel/libtool
+	dev-build/autoconf
+	dev-build/libtool
 	sys-devel/gettext
 	virtual/pkgconfig
 "
