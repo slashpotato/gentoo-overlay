@@ -432,7 +432,7 @@ multilib_src_configure() {
 		$(usex bolt -DLLVM_ENABLE_PROJECTS=bolt "")
 	)
 
-	if use bolt && use test \
+	if use bolt\
 		&& has_version llvm-core/clang && has_version llvm-core/lld; then
 		mycmakeargs+=(
 			-DBOLT_CLANG_EXE="$(type -P clang)"
