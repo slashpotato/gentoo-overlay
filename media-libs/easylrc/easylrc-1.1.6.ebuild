@@ -1,14 +1,15 @@
 EAPI=8
 
-inherit bash-completion-r1 git-r3 meson
+inherit bash-completion-r1 meson
 
 DESCRIPTION="Small C++ library for parsing LRC and eLRC files"
 HOMEPAGE="https://slashpotato.codeberg.page/easyLRC/"
-EGIT_REPO_URI="https://codeberg.org/slashpotato/easyLRC.git"
+SRC_URI="https://codeberg.org/slashpotato/easyLRC/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+S="${WORKDIR}/${PN}"
 
 LICENSE="ZLIB"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="amd64 arm64"
 IUSE="+utils +bash-completion +zsh-completion +fish-completion"
 
 RDEPEND="
