@@ -126,11 +126,14 @@ def add_distribution_components(text: str) -> str:
 	if "llvm-bolt-heatmap" in text:
 		return text  # уже пропатчено
 
-	anchor = '\tfi\n\tprintf "%s${sep}" "${out[@]}"\n}\n'
-	if anchor not in text:
+	pattern = re.compile(
+		r'\tfi\n(?:\n)?\tprintf "%s\$\{sep\}" "\$\{out\[@\]\}"\n\}\n'
+	)
+	m = pattern.search(text)
+	if not m:
 		raise SystemExit(
 			"не нашёл хвост get_distribution_components() "
-			"(ожидал '\\tfi\\n\\tprintf \"%s${sep}\" \"${out[@]}\"\\n}\\n')"
+			'(искал \'\\tfi ... \\tprintf "%s${sep}" "${out[@]}"\\n}\\n\')'
 		)
 
 	block = (
@@ -144,7 +147,8 @@ def add_distribution_components(text: str) -> str:
 		"\t\t)\n"
 	)
 
-	return text.replace(anchor, block + anchor, 1)
+	insert_pos = m.start()
+	return text[:insert_pos] + block + text[insert_pos:]
 
 
 def add_marker(text: str) -> str:

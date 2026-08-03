@@ -380,6 +380,14 @@ get_distribution_components() {
 		use xml && out+=(
 			llvm-mt
 		)
+		use bolt && out+=(
+			bolt
+			bolt_rt
+			llvm-bolt-binary-analysis
+			llvm-bolt-heatmap
+			llvm-bolt
+			merge-fdata
+		)
 	fi
 
 	printf "%s${sep}" "${out[@]}"
@@ -441,7 +449,7 @@ multilib_src_configure() {
 		$(usex bolt -DLLVM_ENABLE_PROJECTS=bolt "")
 	)
 
-	if use bolt\
+	if use bolt && use test \
 		&& has_version llvm-core/clang && has_version llvm-core/lld; then
 		mycmakeargs+=(
 			-DBOLT_CLANG_EXE="$(type -P clang)"
