@@ -98,7 +98,7 @@ def add_bolt_test_toolchain(text: str) -> str:
 		return text  # уже пропатчено
 
 	block = (
-		"\n\tif use bolt && use test \\\n"
+		"\n\tif use bolt\\\n"
 		"\t\t&& has_version llvm-core/clang && has_version llvm-core/lld; then\n"
 		"\t\tmycmakeargs+=(\n"
 		'\t\t\t-DBOLT_CLANG_EXE="$(type -P clang)"\n'
