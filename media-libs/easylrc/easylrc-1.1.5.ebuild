@@ -9,7 +9,7 @@ SRC_URI="https://codeberg.org/slashpotato/easyLRC/archive/v${PV}.tar.gz -> ${P}.
 
 LICENSE="ZLIB"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64"
+#KEYWORDS="~amd64 ~arm64"
 IUSE="+utils"
 
 RDEPEND="
