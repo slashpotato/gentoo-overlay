@@ -61,3 +61,5 @@ fi
 for f in "${changed[@]:-}"; do
 	[[ -n "${f}" ]] && echo "${f}"
 done
+
+exit 0
