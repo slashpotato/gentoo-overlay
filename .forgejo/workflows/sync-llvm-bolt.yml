@@ -57,14 +57,11 @@ jobs:
       # официальный stage3 годится: там уже есть portage/ebuild(1) и toolchain.
       # если у тебя есть свой образ с уже настроенным make.conf/DISTDIR -
       # подставь его сюда, будет быстрее (не нужно поднимать portage с нуля).
-      image: gentoo/stage3:latest
+      image: codeberg.org/slashpotato/overlay-builder:latest
       options: --network=host
     steps:
       - name: emerge --sync основного дерева (нужен для зависимостей типа lld)
         run: emerge-webrsync -q || emerge --sync -q
-
-      - name: add deps
-        run: emerge -gq net-libs/nodejs dev-vcs/git dev-util/pkgcheck
 
       - name: checkout overlay (после коммита sync-job)
         uses: actions/checkout@v4
