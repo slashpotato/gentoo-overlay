@@ -60,6 +60,9 @@ jobs:
       image: gentoo/stage3:latest
       options: --network=host
     steps:
+      - name: emerge --sync основного дерева (нужен для зависимостей типа lld)
+        run: emerge-webrsync -q || emerge --sync -q
+
       - name: add node
         run: emerge -g nodejs
 
@@ -86,9 +89,6 @@ jobs:
           masters = gentoo
           auto-sync = no
           EOF
-
-      - name: emerge --sync основного дерева (нужен для зависимостей типа lld)
-        run: emerge-webrsync -q || emerge --sync -q
 
       - name: ebuild manifest для изменённых версий
         run: |
