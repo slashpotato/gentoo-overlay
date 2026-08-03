@@ -1,0 +1,30 @@
+name: Rebuild base image
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: alpine
+    container:
+      image: quay.io/podman/stable
+      options: --privileged
+
+    steps:
+      - name: Install git
+        run: dnf install -y git
+
+      - name: Checkout
+        run: |
+          git clone --depth 1 https://codeberg.org/slashpotato/gentoo-overlay.git --branch images --depth 1 --recursive .
+
+      - name: Log in to Codeberg registry
+        run: echo "${{ secrets.CODEBERG_TOKEN }}" | podman login codeberg.org -u "${{ secrets.CODEBERG_USER }}" --password-stdin
+
+      - name: Build base
+        run: podman build --no-cache -t codeberg.org/slashpotato/overlay-builder:latest .
+
+      - name: Push
+        run: podman push codeberg.org/slashpotato/overlay-builder:latest
