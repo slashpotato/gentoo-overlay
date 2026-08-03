@@ -54,21 +54,18 @@ jobs:
     if: needs.sync-and-patch.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: alpine
     container:
-      # официальный stage3 годится: там уже есть portage/ebuild(1) и toolchain.
-      # если у тебя есть свой образ с уже настроенным make.conf/DISTDIR -
-      # подставь его сюда, будет быстрее (не нужно поднимать portage с нуля).
       image: codeberg.org/slashpotato/overlay-builder:latest
       options: --network=host
     steps:
-      - name: emerge --sync основного дерева (нужен для зависимостей типа lld)
+      - name: sync
         run: emerge-webrsync -q || emerge --sync -q
 
-      - name: checkout overlay (после коммита sync-job)
+      - name: checkout overlay
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - name: список изменённых в этом коммите ебилдов
+      - name: diff changes
         id: diff
         run: |
           set -euo pipefail
@@ -76,7 +73,7 @@ jobs:
           echo "$files" > /tmp/ebuilds.txt
           cat /tmp/ebuilds.txt
 
-      - name: repos.conf для этого оверлея
+      - name: repos.conf
         run: |
           set -euo pipefail
           mkdir -p /etc/portage/repos.conf
@@ -87,7 +84,7 @@ jobs:
           auto-sync = no
           EOF
 
-      - name: ebuild manifest для изменённых версий
+      - name: ebuild manifest
         run: |
           set -euo pipefail
           while read -r f; do
@@ -96,11 +93,11 @@ jobs:
             ebuild "$f" manifest --force
           done < /tmp/ebuilds.txt
 
-      - name: pkgcheck scan (QA, не фейлим job на предупреждениях)
+      - name: pkgcheck scan
         run: |
           pkgcheck scan --repo slashpotato llvm-core/llvm || true
 
-      - name: пробный резолв зависимостей (без реальной сборки)
+      - name: test resolve
         run: |
           while read -r f; do
             [[ -z "$f" ]] && continue
