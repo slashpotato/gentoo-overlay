@@ -64,7 +64,7 @@ jobs:
         run: emerge-webrsync -q || emerge --sync -q
 
       - name: add deps
-        run: emerge -gq net-libs/nodejs dev-vcs/git
+        run: emerge -gq net-libs/nodejs dev-vcs/git dev-util/pkgcheck
 
       - name: checkout overlay (после коммита sync-job)
         uses: actions/checkout@v4
@@ -101,8 +101,7 @@ jobs:
 
       - name: pkgcheck scan (QA, не фейлим job на предупреждениях)
         run: |
-          emerge -gq --oneshot app-portage/pkgcheck || true
-          pkgcheck scan --repo llvm-bolt-overlay llvm-core/llvm || true
+          pkgcheck scan --repo slashpotato llvm-core/llvm || true
 
       - name: пробный резолв зависимостей (без реальной сборки)
         run: |
