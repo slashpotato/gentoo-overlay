@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>slashpotato@proton.me</email>
+		<name>slashpotato</name>
+	</maintainer>
+	<longdescription>
+		Small C++ library for parsing LRC and eLRC files. https://slashpotato.codeberg.page/easyLRC/
+	</longdescription>
+	<use>
+		<flag name="utils">Build and install the ezlrc command-line utility</flag>
+		<flag name="fish-completion">Install fish shell completion for ezlrc</flag>
+	</use>
+	<upstream>
+		<remote-id type="codeberg">slashpotato/easyLRC</remote-id>
+	</upstream>
+</pkgmetadata>
