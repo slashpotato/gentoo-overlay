@@ -23,7 +23,7 @@ BDEPEND="
 
 src_configure() {
 	local emesonargs=(
-		$(meson_use utils utils)
+		#$(meson_use utils utils)
 		-Dbuildtype=plain
 	)
 	meson_src_configure
