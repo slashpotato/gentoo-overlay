@@ -1,6 +1,14 @@
 name: sync llvm-core/llvm from ::gentoo and patch for bolt
 
 on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'scripts/patch_llvm_bolt.py'
+      - 'scripts/sync_versions.sh'
+      - '.forgejo/workflows/sync-llvm-bolt.yml'
   schedule:
     - cron: '17 3 * * *'
   workflow_dispatch: {}
