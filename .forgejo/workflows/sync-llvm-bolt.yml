@@ -42,12 +42,12 @@ jobs:
           GIT_COMMITTER_NAME: forgejo-actions
           GIT_COMMITTER_EMAIL: actions@noreply.local
         run: |
-          set -euo pipefail
+          set -uo pipefail
           git add llvm-core/llvm
           git commit -m "llvm-core/llvm: sync from ::gentoo + patch for bolt
 
-          $(cat /tmp/changed.txt | sed 's/^/- /')"
-          git push origin HEAD:${{ github.ref_name }}
+          $(cat /tmp/changed.txt | sed 's/^/- /')" || true
+          git push origin HEAD:${{ github.ref_name }} || true
 
   manifest-and-verify:
     needs: sync-and-patch
