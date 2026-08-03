@@ -9,7 +9,7 @@ SRC_URI="https://codeberg.org/slashpotato/easyLRC/archive/v${PV}.tar.gz -> ${P}.
 
 LICENSE="ZLIB"
 SLOT="0"
-#KEYWORDS="~amd64 ~arm64"
+KEYWORDS="amd64 arm64"
 IUSE="+utils"
 
 RDEPEND="
@@ -32,8 +32,4 @@ src_configure() {
 
 src_install() {
 	meson_src_install
-
-	if use doc; then
-		dodoc -r "${BUILD_DIR}"/docs/html
-	fi
 }
