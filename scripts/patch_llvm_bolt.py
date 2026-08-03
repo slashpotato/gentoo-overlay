@@ -98,7 +98,7 @@ def add_bolt_test_toolchain(text: str) -> str:
 		return text  # уже пропатчено
 
 	block = (
-		"\n\tif use bolt\\\n"
+		"\n\tif use bolt && use test \\\n"
 		"\t\t&& has_version llvm-core/clang && has_version llvm-core/lld; then\n"
 		"\t\tmycmakeargs+=(\n"
 		'\t\t\t-DBOLT_CLANG_EXE="$(type -P clang)"\n'
@@ -113,6 +113,38 @@ def add_bolt_test_toolchain(text: str) -> str:
 
 	insert_pos = m.end()
 	return text[:insert_pos] + block + text[insert_pos:]
+
+
+def add_distribution_components(text: str) -> str:
+	"""
+	Добавляет use bolt && out+=( ... ) в get_distribution_components(),
+	рядом с существующими use binutils-plugin/debuginfod/xml && out+=(...).
+	Без этого сборка падает с die "Update get_distribution_components()!",
+	т.к. включение bolt в LLVM_ENABLE_PROJECTS добавляет CMake-компоненты,
+	которых ручной список out[] ещё не знает.
+	"""
+	if "llvm-bolt-heatmap" in text:
+		return text  # уже пропатчено
+
+	anchor = '\tfi\n\tprintf "%s${sep}" "${out[@]}"\n}\n'
+	if anchor not in text:
+		raise SystemExit(
+			"не нашёл хвост get_distribution_components() "
+			"(ожидал '\\tfi\\n\\tprintf \"%s${sep}\" \"${out[@]}\"\\n}\\n')"
+		)
+
+	block = (
+		"\t\tuse bolt && out+=(\n"
+		"\t\t\tbolt\n"
+		"\t\t\tbolt_rt\n"
+		"\t\t\tllvm-bolt-binary-analysis\n"
+		"\t\t\tllvm-bolt-heatmap\n"
+		"\t\t\tllvm-bolt\n"
+		"\t\t\tmerge-fdata\n"
+		"\t\t)\n"
+	)
+
+	return text.replace(anchor, block + anchor, 1)
 
 
 def add_marker(text: str) -> str:
@@ -150,6 +182,7 @@ def main() -> None:
 	text = add_cmake_arg(text)
 	text = add_bdepend(text)
 	text = add_bolt_test_toolchain(text)
+	text = add_distribution_components(text)
 	text = add_marker(text)
 
 	dst.parent.mkdir(parents=True, exist_ok=True)
