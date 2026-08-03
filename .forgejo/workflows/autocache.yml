@@ -64,5 +64,5 @@ jobs:
             echo "nothing to commit"
             exit 0
           fi
-          git commit -m "regenerate Manifest + md5-cache [skip ci]"
+          git commit -m "[ci] regenerate Manifest + md5-cache [skip ci]"
           git push origin HEAD:${{ github.ref_name }}
