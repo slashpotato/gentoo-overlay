@@ -18,7 +18,7 @@ jobs:
 
       - name: Checkout
         run: |
-          git clone --depth 1 https://codeberg.org/slashpotato/gentoo-overlay.git --branch images --depth 1 --recursive .
+          git clone --depth 1 https://codeberg.org/slashpotato/gentoo-overlay.git --depth 1 --recursive .
 
       - name: Log in to Codeberg registry
         run: echo "${{ secrets.CODEBERG_TOKEN }}" | podman login codeberg.org -u "${{ secrets.CODEBERG_USER }}" --password-stdin
