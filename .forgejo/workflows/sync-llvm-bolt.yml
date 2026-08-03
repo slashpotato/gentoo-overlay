@@ -63,8 +63,8 @@ jobs:
       - name: emerge --sync основного дерева (нужен для зависимостей типа lld)
         run: emerge-webrsync -q || emerge --sync -q
 
-      - name: add node
-        run: emerge -g nodejs
+      - name: add deps
+        run: emerge -gq net-libs/nodejs dev-vcs/git
 
       - name: checkout overlay (после коммита sync-job)
         uses: actions/checkout@v4
@@ -101,7 +101,7 @@ jobs:
 
       - name: pkgcheck scan (QA, не фейлим job на предупреждениях)
         run: |
-          emerge -q --oneshot app-portage/pkgcheck || true
+          emerge -gq --oneshot app-portage/pkgcheck || true
           pkgcheck scan --repo llvm-bolt-overlay llvm-core/llvm || true
 
       - name: пробный резолв зависимостей (без реальной сборки)
