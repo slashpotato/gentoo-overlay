@@ -6,6 +6,7 @@ DESCRIPTION="Small C++ library for parsing LRC and eLRC files"
 HOMEPAGE="https://slashpotato.codeberg.page/easyLRC/"
 
 SRC_URI="https://codeberg.org/slashpotato/easyLRC/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+S="${WORKDIR}/${PN}"
 
 LICENSE="ZLIB"
 SLOT="0"
