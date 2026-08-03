@@ -83,8 +83,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /etc/portage/repos.conf
-          cat > /etc/portage/repos.conf/llvm-bolt-overlay.conf <<EOF
-          [llvm-bolt-overlay]
+          cat > /etc/portage/repos.conf/slashpotato.conf <<EOF
+          [slashpotato]
           location = $(pwd)
           masters = gentoo
           auto-sync = no
