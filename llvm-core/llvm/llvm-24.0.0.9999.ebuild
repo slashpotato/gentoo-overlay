@@ -55,6 +55,7 @@ BDEPEND="
 		<llvm-runtimes/libcxx-${LLVM_VERSION}.9999
 	)
 	libffi? ( virtual/pkgconfig )
+	test? ( llvm-core/clang llvm-core/lld )
 "
 # There are no file collisions between these versions but having :0
 # installed means llvm-config there will take precedence.
@@ -442,6 +443,15 @@ multilib_src_configure() {
 		-DOCAMLFIND=NO
 		$(usex bolt -DLLVM_ENABLE_PROJECTS=bolt "")
 	)
+
+	if use bolt && use test \
+		&& has_version llvm-core/clang && has_version llvm-core/lld; then
+		mycmakeargs+=(
+			-DBOLT_CLANG_EXE="$(type -P clang)"
+			-DBOLT_LLD_EXE="$(type -P ld.lld)"
+		)
+	fi
+
 
 	local suffix=
 	if [[ -n ${EGIT_VERSION} && ${EGIT_BRANCH} != release/* ]]; then
