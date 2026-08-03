@@ -60,6 +60,9 @@ jobs:
       image: gentoo/stage3:latest
       options: --network=host
     steps:
+      - name: add node
+        run: emerge -g nodejs
+
       - name: checkout overlay (после коммита sync-job)
         uses: actions/checkout@v4
         with:
