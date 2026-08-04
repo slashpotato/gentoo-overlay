@@ -15,7 +15,7 @@ on:
 
 jobs:
   regen:
-    runs-on: alpine
+    runs-on: codeberg-small-lazy
     container:
       image: codeberg.org/slashpotato/overlay-builder:latest
       options: --network=host
