@@ -15,7 +15,7 @@ on:
 
 jobs:
   sync-and-patch:
-    runs-on: alpine
+    runs-on: docker
     container:
       image: node:alpine
     steps:
