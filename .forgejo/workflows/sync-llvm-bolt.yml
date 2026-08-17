@@ -60,7 +60,7 @@ jobs:
   manifest-and-verify:
     needs: sync-and-patch
     if: needs.sync-and-patch.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: alpine
+    runs-on: docker
     container:
       image: codeberg.org/slashpotato/overlay-builder:latest
       options: --network=host
